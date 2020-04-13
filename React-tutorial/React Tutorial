@@ -1,0 +1,240 @@
+# Different ways to call the event handlers in React:
+  1. Call using bind. Ex: clickHandler.bind(this) : This method creates a brand new event handler on ever render of the component and may cause problems for huge components
+  2. Calling using arrow functions(1). Ex: ()=>clickHandler() : 
+
+
+  React-testing:
+  - data-testid is used to get access to a particular element. id could have been used instead of data-testid but ids may change and may be used to manupulate several other things. 
+
+  setState in react:
+  	The primary way that you make UI updates to your React applications is through a call to the setState() function. This function will perform a shallow merge between the new state that you provide and the previous state, and will trigger a re-render of your component and all decedents.
+
+  	Parameters
+
+	updater: It can be an object with a number of key-value pairs that should be merged into the state or a function that returns such an object.
+	callback (optional): a function which will be executed after setState() has been executed successfully. Due to the fact that calls to setState() are not guaranteed by React to be atomic, this can sometimes be useful if you want to perform some action after you are positive that setState() has been executed successfully.
+
+	Class components act like pure functions because the props that you pass to them, cannot be modified. If you want something on your page to change on the basis of an event like a button click, then use states. 
+	States are native to the respective react components and their values can be modified using the setState method.
+	
+	Ways of Calling setState method:
+	Updating component states
+	Although it is technically possible to write to this.state from anywhere in your code, it will not prompt a re-render, and this would lead to unstable and incorrect state values when you try to access the values through this.state.
+
+	The only place you should directly write to this.state is the component’s constructor method.
+
+	React intentionally “waits” until all components call setState() in their event handlers before starting to re-render. This boosts performance by avoiding unnecessary re-renders.
+	Know that setState() can be considered as a request instead of an immediate command to update the component.
+	This is why trying to use this.state immediately after a setState() would lead to incorrect behaviors:
+
+	Use the setState() method everywhere else, doing so will accept an object that will eventually be merged into the component’s existing state.
+	1. by passing an object as a parameter to the setState method
+	2. Passing a function as a parameter to the setState method. 
+
+	2 is advisable in most of the cases because when multiple setStates are called, react interprets them as a single call and doesn't update values as intended. 
+	Ex: 
+	  class example extends Component {
+	  	constructor(){
+	  		super();
+	  		this.state{
+	  			message: 'Hello',
+	  			value: 1,
+	  		}
+	  	}
+
+	  	onClickfn = () => {
+	  		this.setState({
+	  			value: this.state.value+1
+	  		})
+	  		this.setState({
+	  			message: 'Hello'+ {this.state.value}
+	  		})
+	  	}
+
+	  	render(){
+	  		<div>
+	  			{this.state.message}---{this.state.value}
+	  			<button onClick={onClickfn}>Click me to change the state</button>
+	  		</div>
+	  	}
+	  }
+
+	  Output of this example would be 1-----0 on first button click because react interprets both the setState calls to be one. In order to get the desired result, i.e, 1-----1, use function as a paramter to the setState method
+
+	  this.setstate((prevState,props)=>{
+	  	value: prevState.value+1
+	  })
+
+	  this.setstate((prevState,props)=>{
+	  	message: 'Hello'+ {prevSate.value}
+	  })
+	  This is the righ way to get the desired result. 
+
+	  setState is an asynchronous function. 
+
+	  If you want some job to be done only after the state has been changed, then use callback functions to do that job. If you place the job after the setState function is called then the job will be done first and then the setState function will be called because setState function is asynchronous. 
+
+	  We cannot add if else statements inside the jsx. They do not work inside the jsx because jsx is just a syntactic sugar for function calls and object cration. 
+
+	  Conditional Rendering:
+	  There are 4 ways to conditional rendering of elements:
+	  1. if/else  2. element variables  3. Ternary conditional operator  4. short circuit operator(using &&)
+
+	  The short circuit method is widely used but only when you want to either display something or nothing at all for that matter. 
+	  Mostly terneray conditional rendering and short circuit conditional rendering are used  
+
+	  List Rendering:
+	  Lists are mostly rendered using the map method of arrays. 
+	  Note: when you traverse over a list or an array, the console will give a warning asking you to assign a key value to each child or item in the list. You can assign a value to the key based on the knowledge keeping in mind that the key should always be unique and hence try to assign ids. Keys cannot be accessed inside the child element. So, key prop is something which react needs to render the list properly and the child doesn't have access to it. 
+	  Need of key prop:
+	  Keys allow react identify about which items in the list are added, removed and plays a crucial role in handling UI updates. This helps in efficient update of UI. 
+	  A 'key' is a special string attribute you will need when crearting list of elements. 
+	  Keys give unique identity to the elements  
+
+	  When there are no unique properties inside elements to assign it to the key, use the index of the array while traversing. The index is passed as a second argument to the map method. Use the index to assign it to the key. 
+
+	  When to use index as a key?
+	  1. The items in your list do not have a unique id
+	  2. The list is static list and will not change 
+	  3. The list will never be reordered or filtered
+
+
+	 Lifecycle methods:
+	 Every component goes through several stages in its lifecycle. Reacts provides us with several stages which can help us override those methods. 
+	 Lifecycle methods exist only for class components and not for the functional components.
+	 We can ainly classify the methods into four stages:
+	 1. Mounting : called when an instance of a component is being created and inserted into the DOM. 
+	 2. Updating : called when a component is re-rendered as a result of changes in its props or the state
+	 3. Unmounting : called when a component is removed from the DOM
+	 4. Error handling : called when there is an error during rendering in a lifecycle method or in the constructor of any child component.
+
+	 1. Mounting: 
+	 Methods associated with mounting:
+	 a. constructor (props) : It is the method that is called whenever a new component is created 
+	 						  It is used for initializing the state and binding event handlers
+	 						  You should never cause side effects like maing ajax calls or http requests
+	 						  Always call super(props) if you ever want to use  props in your component. 
+	 b. render() : Only required method in a class component. 
+	 			   Reads props and state and renders jsx. It is a pure component i.e, only renders what it receives and never modifies the props or the state
+	 			   You should never interact with the DOM, change the props/state or make any ajax calls. 
+	 			    When render method of a component is executed, the other child components' lifecycle methods are also executed.
+	 c. componentDidMount() : invoked after the component and all its child components are rendered to the DOM
+	 						  Can cause all side effects, i.e, Interact with the DOM or perform any ajax calls to load data
+	 						  Whenever you add setInterval to componentDidMount, it adds a setInterval function to the browser and updates the browser every x seconds that you give. 
+
+
+	Note that functions like setInterval and addEventListener are attached to the browser to be rendered or run everytime in a certain time interval. Use componentDidMount but always also remember to destroy them 
+	Async calls during the component lifecycle means the component will render before that data is loaded, so…
+	Initialize state in the constructor and/or be sure to handle empty data.
+	Use PropTypes to aid debugging
+	Use default props when appropriate
+	Destructuring syntax is a clean, easy way to provide defaults
+
+	The nature of async events in JavaScript, when you kick off an API call, the browser goes back to doing other work in the meantime. When React is rendering a component, it doesn’t wait for componentWillMount to finish whatever it started – React marches on and continues to render.
+
+	There is no way to “pause” rendering to wait for data to arrive. You cannot return a promise from componentWillMount or wrangle in a setTimeout somehow. The right way to handle this is to setup the component’s initial state so that even when it renders with no data, it still looks acceptable.
+
+	In practice, componentDidMount is the best place to put calls to fetch data, for two reasons:
+	Using didMount makes it clear that data won’t be loaded until after the initial render. This reminds you to set up initial state properly, so you don’t end up with undefined state that causes errors.
+	If you ever need to render your app on the server (a.k.a. server-side-rendering/SSR with Next.js or similar), componentWillMount will actually be called twice – once on the server, and again on the client – which is probably not what you want. Putting your API call code in componentDidMount will ensure that data is only fetched from the client, where it should be.
+
+	React: Re-render child components on parent state change
+
+	I would just like to reiterate the some gotchas and best practices.
+	render(){
+	  return (<SomeComponent someProp={this.state.someValue} />)
+	}
+	In this situation SomeComponent gets constructed once.
+	class SomeComponent extends Component {
+	  constructor({someProp}){
+	    super()
+	    this.state = {someProp}
+	  }
+	...
+	}
+	So on the first construction of SomeComponent the prop someProp COULD be set as an initial state.
+	But what happens with the parent updates it state?
+	//In the parent
+	this.setState({someValue:false})
+	SomeComponent has already been constructed so the child component will not update and re-render.
+	This is where componentWillReceiveProps comes in handy.
+	componentWillReceiveProps({someProp}) {
+	  this.setState({...this.state,someProp})
+	}
+	Now when receiving updated props from the parent the child will re-render.
+
+	# Fragments:
+	A common pattern in React is for a component to return multiple elements. Fragments let you group a list of children without adding extra nodes to the DOM.
+	 We can use react fragments to remove the unnecessary nodes being rendered to the DOM. 
+	 React fragments take only one prop, i.e, key and can be used even inside maps to render elements instead of just enclosing it inside a div. 
+	 They can be replaced with <> and </> but in that you cannot add key as prop. 
+
+	 Advantages of using fragments over conventional divs:
+	 It’s a tiny bit faster and has less memory usage (no need to create an extra DOM node). This only has a real benefit on very large and/or deep trees, but application performance often suffers from death by a thousand cuts. This is one cut less.
+	 Some CSS mechanisms like Flexbox and CSS Grid have a special parent-child relationship, and adding divs in the middle makes it hard to keep the desired layout while extracting logical components.
+	 The DOM inspector is less cluttered. 🙂
+
+	 NOTE: 
+	 When you update the state in parent and pass it as props to child component, the following happens:
+	 a. If you use the props in your child's state then the state of the child is not updated 
+	 b. If you pass the props from parent and use it as only props in your render method, then the component does update and re-render.
+	  It doesn't re-render only when you initialize the child state using the props passed from the parent. This happens because when you try to update the state of the child you are not using setState to update the child and it is initialized only once using the constructor. The next time the parent re-renders and child has to reconstruct, it sees that all the nodes are the same and hence doesn't re-render but when it is passed as props, the nodes do change and hence re-render occurs. 
+
+	When do we use componentDidUpdate()?
+	An example of when to use componentDidUpdate() is when we need to call an external API on condition that the previous state and the current state have changed.
+	The call to the API would be conditional to the state being changed. If there is no state change, no API is called.
+	Like mentioned before, to avoid an infinite loop, the API call needs to be inside a conditional statement.
+
+
+	HOC:
+	A higher-order component in React is a pattern used to share common functionality between components without repeating code. A higher-order component is actually not a component though, it is a function
+	A pattern where a function takes another component as argument and returns a new component.
+	const newComponent = higherOrderComponent(originalComponent)
+	All the components made using the HOC have separate states and do not intervene in each others properties. 
+	Note that a HOC doesn’t modify the input component, nor does it use inheritance to copy its behavior. Rather, a HOC composes the original component by wrapping it in a container component. A HOC is a pure function with zero side-effects.
+	We spread the props passed to the component. This ensures that any other props that are passed to the wrapped component will be accessible via this.props in the same manner they would be called if the component was not passed through our higher-order component function.
+
+	Higher-order component considerations
+	A HOC should be a pure function with no side-effects. It should not make any modifications and just compose the original component by wrapping it in another component.
+	Do not use HOC’s in the render method of a component. Access the HOC outside the component definition.
+	Static methods must be copied over to still have access to them. A simple way to do this is the hoist-non-react-statics package.
+	Refs are not passed through.
+
+	#Render Props:
+	Technique for sharing code between the components whose prop value is a function. 
+
+	# Context:
+	Context is used to pass down props from parent to grand-children without having to pass it through different its children down the line. 
+	There are three steps to be followed in order to make use of context:
+	a. Create a context
+	b. Provide a context value
+	c. Use the context value
+
+
+	#HOOKS
+	a. Rules of Hooks 
+	Only call hooks at the top level. Don't call hooks inside loops, functions or conditions.
+	Only call hooks from react functions. Do not call them from any regular functions and just react functional components.
+
+	b. useState with previous state
+	setAnything is an asynchronous function. Whenever you try to increment the state value by a certain number it depends always depends on the value of the previous state. And setAnything being asynchronous cannot increment values by x at one go and hence one should always use a function inside the setState function which takes an argument of the prevState and calculates the current state. React will preserve this state between re-renders. 
+	It doesn’t merge the old and new state together.
+
+	setState function merges and updates the state itself but useState doesn't and hence one should do it manually. 
+
+	# Summary of useState hook:
+	a. It lets us add state to functional components
+	b. With classes, state was always an object but with useState the state doesn't nececsaarily has to be an object. It can be an array, booolean or anything.
+	c. It returns an array with two elements. The first value is the current value of the state and the second one is a state setter function. 
+	d. WHhen new state value depends on the previous state value, you can pass a function to the setter function. 
+	e. When dealing with bjects or arrays, always make sure to spread your state variable and then call the setter function. 
+
+	# UseEffect
+	Its works in replacement of componentDidMount, componentDidUpdate and componentWillUnmount of class components. 
+	Lets perform side effects in functional components 
+
+	Whenever you want to cleanup code i.e, umnount a component and not calculate its state when it is removed from the DOM, add return 'function' which executes when the component unmounts. 
+	Dependency array is everything that you must let react know about the changes that it should look for in the states. 
+	DOUBT - useEffect with incorrect dependency
+
+
